@@ -16,6 +16,12 @@ class Order(models.Model):
     created_at = models.DateTimeField('Creation date', auto_now_add=True)
     external_id = models.CharField('External identifier', max_length=128)
 
+    class Meta:
+        ordering = ('id', 'status', 'external_id',)
+
+    def __str__(self):
+        return f'order id_{self.id}'
+
 
 class Product(models.Model):
     name = models.CharField('Product', max_length=64)
@@ -41,3 +47,6 @@ class OrderDetail(models.Model):
         null=True,
     )
     price = models.DecimalField('Price', max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return f'{self.order}_details'
