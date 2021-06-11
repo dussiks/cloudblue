@@ -1,9 +1,13 @@
 import os
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'e8a=191w2zk8&9db3gz+^mmqby+o*c=yw8z0b^ghou+ezcnw3$'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 DEBUG = True
 
@@ -77,11 +81,13 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
+DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
+
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
-USE_TZ = True
+USE_TZ = False
 
 STATIC_URL = '/static/'
 
@@ -99,4 +105,8 @@ REST_FRAMEWORK = {
         'anon': '100/day',
     },
     'DEFAULT_PAGINATION_CLASS': 'orders.paginator.CustomPagination',
+    'PAGE_SIZE': 25,
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ]
 }

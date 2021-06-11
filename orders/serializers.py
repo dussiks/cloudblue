@@ -20,6 +20,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     details = OrderDetailSerializer(many=True)
+    created_at = serializers.DateTimeField(format='%d-%m-%Y %H:%M:%S')
 
     class Meta:
         model = Order
