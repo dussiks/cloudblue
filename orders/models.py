@@ -1,17 +1,18 @@
 from django.db import models
 
 
+class Status(models.TextChoices):
+    NEW = 'new', 'пользователь'
+    ACCEPTED = 'accepted', 'модератор'
+    FAILED = 'failed', 'администратор'
+
+
 class Order(models.Model):
-    STATUS_CHOICES = [
-        ('new', 'New'),
-        ('accepted', 'Accepted'),
-        ('failed', 'Failed'),
-    ]
     status = models.CharField(
         'Status',
         max_length=12,
-        choices=STATUS_CHOICES,
-        default='new',
+        choices=Status.choices,
+        default=Status.NEW,
     )
     created_at = models.DateTimeField('Creation date', auto_now_add=True)
     external_id = models.CharField('External identifier', max_length=128)
