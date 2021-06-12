@@ -10,6 +10,7 @@ from .serializers import (
 
 
 NOT_NEW_ORDER_STATUS_TEXT = 'Only "new" status of order could be changed.'
+NO_PRODUCT_FOUND_TEXT = 'No product with such id in database.'
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -56,6 +57,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        order_details = serializer.validated_data.get('details')
+        product_data = order_details[0]
+        user_given_product = product_data.get('product')
+        product_id = user_given_product.get('id')
+        if not Product.objects.filter(id=product_id).exists():
+            return Response(
+                NO_PRODUCT_FOUND_TEXT,
+                status=status.HTTP_400_BAD_REQUEST
+            )
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
@@ -63,6 +73,9 @@ class OrderViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
             headers=headers
         )
+
+    def update(self, request, *args, **kwargs):
+        pass
 
     def destroy(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=self.kwargs.get('pk'))

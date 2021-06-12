@@ -2,9 +2,9 @@ from django.db import models
 
 
 class Status(models.TextChoices):
-    NEW = 'new', 'пользователь'
-    ACCEPTED = 'accepted', 'модератор'
-    FAILED = 'failed', 'администратор'
+    NEW = 'new', 'New'
+    ACCEPTED = 'accepted', 'Accepted'
+    FAILED = 'failed', 'Failed'
 
 
 class Order(models.Model):
@@ -25,7 +25,7 @@ class Order(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField('Product', max_length=64)
+    name = models.CharField('Product', max_length=64, unique=True)
 
     def __str__(self):
         return self.name
@@ -36,18 +36,18 @@ class OrderDetail(models.Model):
         Order,
         on_delete=models.CASCADE,
         related_name='details',
-        null=False,
-        blank=False,
     )
     amount = models.IntegerField('Amount')
     product = models.ForeignKey(
         Product,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='details',
-        blank=False,
-        null=True,
     )
-    price = models.DecimalField('Price', max_digits=12, decimal_places=2)
+    price = models.DecimalField(
+        'Price',
+        max_digits=12,
+        decimal_places=2,
+    )
 
     def __str__(self):
         return f'{self.order}_details'

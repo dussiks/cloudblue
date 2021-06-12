@@ -5,19 +5,20 @@ from .models import Order, OrderDetail, Product
 
 class ProductSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=True)
+    name = serializers.CharField(required=False)
 
     class Meta:
         model = Product
-        fields = ('id', 'name',)
+        fields = ('id', 'name')
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(required=False)
+    product = ProductSerializer()
 
     class Meta:
         model = OrderDetail
         fields = ('id', 'product', 'amount', 'price',)
-        depth = 1
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -36,8 +37,10 @@ class OrderSerializer(serializers.ModelSerializer):
         details = validated_data.pop('details')
         order = Order.objects.create(**validated_data)
         for detail in details:
-            OrderDetail.objects.create(**detail, order=order)
+            product_data = detail.pop('product')
+            product, created = Product.objects.get_or_create(**product_data)
+            OrderDetail.objects.create(**detail, order=order, product=product)
         return order
 
-
-
+    def update(self, instance, validated_data):
+        pass
