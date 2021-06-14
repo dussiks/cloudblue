@@ -46,7 +46,7 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(**validated_data)
         for detail in details:
             product_data = detail.pop('product')
-            product, created = Product.objects.get_or_create(**product_data)  # created just for serialization purpose.
+            product, created = Product.objects.get_or_create(**product_data)  # if created - just for serialization purpose.
             OrderDetail.objects.create(**detail, order=order, product=product)
         return order
 

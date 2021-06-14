@@ -91,7 +91,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         order = get_object_or_404(Order, pk=self.kwargs.get('pk'))
         if order.status == Status.ACCEPTED:
             return Response(
-                f'Order with status "accepted" could not be deleted.',
+                f'Order with status {Status.ACCEPTED} could not be deleted.',
                 status=status.HTTP_405_METHOD_NOT_ALLOWED
             )
         self.perform_destroy(order)
