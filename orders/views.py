@@ -3,13 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from .models import Status, Order, OrderDetail, Product
-from .serializers import (
-    OrderSerializer, OrderDetailSerializer, ProductSerializer
-)
+from .models import Status, Order, Product
+from .serializers import OrderSerializer
 
 
-NOT_NEW_ORDER_STATUS_TEXT = 'Only "new" status of order could be changed.'
+NOT_NEW_ORDER_STATUS_TEXT = 'Only orders with status "new" could be changed.'
 NO_PRODUCT_FOUND_TEXT = 'No product with such id in database.'
 
 
@@ -58,10 +56,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         order_details = serializer.validated_data.get('details')
-        product_data = order_details[0]
+        try:
+            product_data = order_details[0]
+        except IndexError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         user_given_product = product_data.get('product')
-        product_id = user_given_product.get('id')
-        if not Product.objects.filter(id=product_id).exists():
+        user_product_id = user_given_product.get('id')
+        if not Product.objects.filter(id=user_product_id).exists():
             return Response(
                 NO_PRODUCT_FOUND_TEXT,
                 status=status.HTTP_400_BAD_REQUEST
@@ -75,7 +76,16 @@ class OrderViewSet(viewsets.ModelViewSet):
         )
 
     def update(self, request, *args, **kwargs):
-        pass
+        order = self.get_object()
+        serializer = self.get_serializer(order, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if order.status == Status.NEW:
+            self.perform_update(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            NOT_NEW_ORDER_STATUS_TEXT,
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
     def destroy(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=self.kwargs.get('pk'))
