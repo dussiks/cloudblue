@@ -5,7 +5,7 @@ from .views import OrderViewSet
 
 
 v1_router = DefaultRouter()
-v1_router.register('orders', OrderViewSet, basename='orders')
+v1_router.register(r'orders', OrderViewSet, basename='orders')
 
 
 urlpatterns = [

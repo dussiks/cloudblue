@@ -38,7 +38,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.context['view'].action == 'update':
+        try:
+            action = self.context['view'].action
+        except KeyError:
+            return
+        if action == 'update':
             self.fields['details'].read_only = True
 
     def create(self, validated_data):
@@ -54,5 +58,4 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.external_id = validated_data.get(
             'external_id', instance.external_id
         )
-        instance.save()
         return instance

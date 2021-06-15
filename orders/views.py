@@ -16,41 +16,23 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     filterset_fields = ['external_id', 'status', ]
 
-    @action(detail=True, methods=['post'], url_path='accept')
-    def change_status_to_accepted(self, request, pk=None):
-        """
-        Checks if the status of existing object is 'new' and changes it to
-        'accepted'. Else, returns sufficient message to user and keeps status
-        without changing.
-        """
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        """Changes status of order to 'accepted'."""
         order = get_object_or_404(Order, pk=pk)
-        if order.status == Status.NEW:
-            order.status = Status.ACCEPTED
-            order.save()
-            serializer = self.get_serializer(order)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(
-            NOT_NEW_ORDER_STATUS_TEXT,
-            status=status.HTTP_405_METHOD_NOT_ALLOWED
-        )
+        order.status = Status.ACCEPTED
+        order.save()
+        serializer = self.get_serializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'], url_path='fail')
-    def change_status_to_failed(self, request, pk=None):
-        """
-        Checks if the status of existing object is 'new' and changes it to
-        'failed'. Else, returns sufficient message to user and keeps status
-        without changing.
-        """
+    @action(detail=True, methods=['post'])
+    def fail(self, request, pk=None):
+        """Changes status of order to 'failed'."""
         order = get_object_or_404(Order, pk=pk)
-        if order.status == Status.NEW:
-            order.status = Status.FAILED
-            order.save()
-            serializer = self.get_serializer(order)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(
-            NOT_NEW_ORDER_STATUS_TEXT,
-            status=status.HTTP_405_METHOD_NOT_ALLOWED
-        )
+        order.status = Status.FAILED
+        order.save()
+        serializer = self.get_serializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
