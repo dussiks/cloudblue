@@ -81,7 +81,7 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
+#DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
 
 USE_I18N = True
 
@@ -108,5 +108,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 25,
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
-    ]
+    ],
+    'DATETIME_FORMAT': '%d-%m-%Y %H:%M:%S',
 }

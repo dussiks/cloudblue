@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -24,9 +26,6 @@ class ViewsTest(APITestCase):
             amount=5,
             price=7.95
         )
-
-    def tearDown(self):
-        super().tearDown()
 
     def test_user_can_get_all_orders(self):
         orders = Order.objects.all()
@@ -135,3 +134,17 @@ class ViewsTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         remove_res = self.client.delete(DETAIL_URL)
         self.assertEqual(remove_res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_new_order_created_with_status_new(self):
+        order = self.order
+        statuses = ['', Status.ACCEPTED, Status.FAILED]
+        for order_status in statuses:
+            order.status = order_status
+            serializer = OrderSerializer(order)
+            response = self.client.post(
+                LIST_URL,
+                data=json.dumps(serializer.data),
+                content_type='application/json'
+            )
+            self.assertEqual(response.data['status'], Status.NEW)
+
