@@ -83,7 +83,8 @@ class ViewsTest(APITestCase):
             'details': new_details
         }
         put_resp = self.client.put(DETAIL_URL, put_data, format='json')
-        self.assertEqual(put_resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(put_resp.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_order_with_status_accepted_does_not_updated(self):
         accept_res = self.client.post(ACCEPT_URL)
@@ -101,7 +102,8 @@ class ViewsTest(APITestCase):
             'details': new_details
         }
         put_resp = self.client.put(DETAIL_URL, put_data, format='json')
-        self.assertEqual(put_resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(put_resp.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_order_status_changes_to_accepted(self):
         accept_res = self.client.post(ACCEPT_URL)
@@ -136,6 +138,7 @@ class ViewsTest(APITestCase):
         self.assertEqual(remove_res.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_new_order_created_with_status_new(self):
+        """Verify if order created only with status 'new'."""
         order = self.order
         statuses = ['', Status.ACCEPTED, Status.FAILED]
         for order_status in statuses:
@@ -147,4 +150,3 @@ class ViewsTest(APITestCase):
                 content_type='application/json'
             )
             self.assertEqual(response.data['status'], Status.NEW)
-

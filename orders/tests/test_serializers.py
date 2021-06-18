@@ -1,5 +1,3 @@
-from django.urls import reverse
-from rest_framework import status
 from rest_framework.test import APITestCase
 
 from orders.models import Order, OrderDetail, Product, Status
@@ -52,9 +50,11 @@ class OrderDetailsSerializerTest(APITestCase):
 
     def test_order_details_fields_content(self):
         data = self.serializer.data
-        self.assertEqual(data['amount'], self.order_detail_attributes['amount'])
+        self.assertEqual(data['amount'],
+                         self.order_detail_attributes['amount'])
         self.assertEqual(data['id'], self.order_detail_attributes['id'])
-        self.assertEqual(data['price'], str(self.order_detail_attributes['price']))
+        self.assertEqual(data['price'],
+                         str(self.order_detail_attributes['price']))
 
 
 class OrderSerializerTest(APITestCase):
@@ -93,6 +93,7 @@ class OrderSerializerTest(APITestCase):
                          self.order_attributes['external_id'])
 
     def test_order_serialization_fails_without_details(self):
+        """Verify order_details field required for order serialization."""
         wrong_data = {
             'id': 3,
             'status': Status.NEW,
@@ -109,3 +110,40 @@ class OrderSerializerTest(APITestCase):
         }
         true_serializer = OrderSerializer(data=true_data)
         self.assertTrue(true_serializer.is_valid())
+
+
+class OrderUpdateOnlySerializerTest(APITestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.product = Product.objects.create(name='test_product')
+        self.order_attributes = {
+            'id': 1,
+            'status': Status.NEW,
+            'external_id': 'some_test_external_id'
+        }
+        self.order = Order.objects.create(**self.order_attributes)
+        self.order_detail = OrderDetail.objects.create(
+            id=1,
+            amount=10,
+            price=19.77,
+            order=self.order,
+            product=self.product
+        )
+
+        self.serializer = OrderUpdateOnlySerializer(instance=self.order)
+
+    def test_order_update_serializer_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertCountEqual(
+            data.keys(),
+            ['id', 'status', 'external_id', 'details', 'created_at']
+        )
+
+    def test_order_update_serialization_takes_only_external_id(self):
+        """Verify if only external_id field is taken for deserialization."""
+        enough_data = {
+            'external_id': 'some_test_external_id'
+        }
+        serializer = OrderUpdateOnlySerializer(data=enough_data)
+        self.assertTrue(serializer.is_valid())
