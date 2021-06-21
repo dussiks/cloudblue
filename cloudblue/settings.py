@@ -11,7 +11,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '*',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,8 +62,8 @@ WSGI_APPLICATION = 'cloudblue.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
     }
 }
 
@@ -80,14 +85,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
-
-#DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
-
-USE_I18N = True
-
-USE_L10N = False
-
-USE_TZ = False
 
 STATIC_URL = '/static/'
 
