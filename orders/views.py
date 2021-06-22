@@ -23,6 +23,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.status = Status.ACCEPTED
         order.save()
         serializer = self.get_serializer(order)
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
@@ -32,6 +33,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         order.status = Status.FAILED
         order.save()
         serializer = self.get_serializer(order)
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
