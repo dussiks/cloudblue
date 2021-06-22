@@ -7,7 +7,7 @@ Web Application that allows operating with Orders by making http calls to the ap
   - external_id
   - status
 
-2. Product - products that could be included in orders. It has next fields:
+2. Product - entity that could be included in orders. It has next fields:
   - id
   - name
   
@@ -78,6 +78,7 @@ Exact order could be returned by id. For example:
 }]
 ```
 
+User can filter orders via fields 'external_id' and 'status'.
 
 ## POST
 
